@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un Exercice</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Nouveau Training</h1>
+  </header>
+
+  <main>
+    <section class="create-training">
+      <form id="training-form">
+        
+        <section class="import-training">
+          <h3>Importer un entraînement</h3>
+          <input type="file" id="file-input" accept=".csv" />
+        </section>
+
+        <button type="submit">Ajouter l'entraînement</button>
+      </form>
+    </section>
+    <section class="preview-training">
+      <h3>Prévisualisation de l'entraînement importé</h3>
+      <table id="training-preview" border="1">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Séries</th>
+            <th>Temps de repos (s)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Les exercices seront ajoutés ici -->
+        </tbody>
+      </table>
+      <button id="confirm-training" style="display: none;">Confirmer et démarrer</button>
+    </section>
+  </main>
+  <script src="index.js"></script>
+</body>
+</html>
