@@ -1,205 +1,178 @@
-/* Reset et configuration globale */
-body, h1, h2, p, button {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    line-height: 1;
-    background-color: #b9c3d5;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-  }
-  
-  header {
-    background: #0073e6;
-    color: white;
-    width: 100%;
-    max-width: 500px;
-    text-align: center;
-    padding: 1rem 0;
-    border-radius: 8px;
-    margin-bottom: 50px;
-  }
-  
-  main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #f9f9f9;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .exercise-info {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
-  .timer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  #timer-display {
-    font-size: 3rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-  }
-  
-  button {
-    background: #0073e6;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background: #005bb5;
-  }
-  
-  footer {
-    margin-top: 2rem;
-    text-align: center;
-    font-size: 0.9rem;
-  }
-  
-  .button-link {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: #0073e6;
-    color: white;
-    text-decoration: none;
-    font-size: 1rem;
-    border-radius: 4px;
-    text-align: center;
-    margin-top: 1rem;
-    transition: background-color 0.3s ease;
-  }
-  
-  .button-link:hover {
-    background-color: #005bb5;
-  }
-  
-
-
-
-  /* Section de création d'un nouvel entraînement */
-
-
-
-.create-training {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
 }
 
-.create-training h3 {
-  margin-bottom: 2rem;
-  font-size: 1.5rem;
+/* Container principal du test */
+.container {
+  max-width: 500px;
+  margin: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  position: relative;
+  min-height: 300px;
+  margin-bottom: 20px;
+}
+
+h1, h2 {
   text-align: center;
   color: #333;
 }
 
-.create-training form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  transition: opacity 0.5s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
 }
 
-.create-training label {
-  font-size: 1rem;
-  margin-top: 1rem;
-  font-weight: bold;
+.page.active {
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
   color: #555;
 }
 
-.create-training input,
-.create-training textarea {
-  padding: 0.75rem;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+input[type="number"],
+input[type="text"] {
   width: 100%;
+  padding: 8px;
   box-sizing: border-box;
 }
 
-.create-training textarea {
-  resize: vertical;
-  min-height: 80px;
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
 }
 
-.create-training button {
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
+button {
+  padding: 10px 20px;
+  background: #007BFF;
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+.result {
+  text-align: center;
+  padding: 15px;
+  background: #e9ecef;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+
+#typeDisplay {
+  font-size: 2.5em;
   font-weight: bold;
-  background-color: #0073e6;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+#explanation {
+  font-size: 1.2em;
+  color: #555;
+}
+
+/* Modal (pop-up) */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-content input[type="text"] {
+  margin-top: 10px;
+}
+
+.modal-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.stopwatch {
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  #timerDisplay {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .stopwatch-buttons button {
+    margin: 0 5px;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+/* Section Tests précédents */
+.previous-tests-container {
+  max-width: 500px;
+  margin: auto;
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-top: 20px;
+  display: none;
+}
+
+.previous-tests-container h2 {
+  text-align: center;
+  color: #333;
+}
+
+.test-record {
+  border-bottom: 1px solid #ddd;
+  padding: 5px 0;
+  font-size: 0.9em;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 1rem;
 }
 
-.create-training button:hover {
-  background-color: #005bb5;
+.test-record:last-child {
+  border-bottom: none;
 }
 
-/* Ajout d'un effet focus pour les champs */
-.create-training input:focus,
-.create-training textarea:focus {
-  border-color: #0073e6;
-  outline: none;
-  box-shadow: 0 0 5px rgba(0, 115, 230, 0.5);
-}
-
-.preview-training {
-  margin-top: 2rem;
-}
-
-#training-preview {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-#training-preview th, #training-preview td {
-  padding: 0.5rem;
-  text-align: left;
-}
-
-#training-preview th {
-  background-color: #0073e6;
-  color: white;
-}
-
-#training-preview td {
-  border: 1px solid #ddd;
-}
-
-#confirm-training {
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  display: block;
-}
-
-#confirm-training:hover {
-  background-color: #218838;
+.test-record:hover {
+  background: #f0f0f0;
 }
