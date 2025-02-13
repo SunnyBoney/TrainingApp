@@ -95,84 +95,34 @@ button:hover {
   color: #555;
 }
 
-/* Modal (pop-up) */
-.modal {
+
+
+/*Animation avant les résulats*/
+
+.loadingOverlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: none;
+  width: 100%;
+  height: 100%;
+  display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
+  flex-direction: column;;
 }
 
-.modal-content {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
+.loadingOverlay .logo {
+  position: absolute;
+  top: 100px;
+  width: 0px;
+  height: 0px;
+  background: url('Animation/Orbe.png') no-repeat center center;
+  background-size: contain;
+  animation: spinLogo 10s linear;
 }
 
-.modal-content input[type="text"] {
-  margin-top: 10px;
-}
-
-.modal-buttons {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-around;
-}
-
-.stopwatch {
-    text-align: center;
-    margin: 20px 0;
-  }
-  
-  #timerDisplay {
-    font-size: 2em;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .stopwatch-buttons button {
-    margin: 0 5px;
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-
-/* Section Tests précédents */
-.previous-tests-container {
-  max-width: 500px;
-  margin: auto;
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  margin-top: 20px;
-  display: none;
-}
-
-.previous-tests-container h2 {
-  text-align: center;
-  color: #333;
-}
-
-.test-record {
-  border-bottom: 1px solid #ddd;
-  padding: 5px 0;
-  font-size: 0.9em;
-  cursor: pointer;
-}
-
-.test-record:last-child {
-  border-bottom: none;
-}
-
-.test-record:hover {
-  background: #f0f0f0;
+@keyframes spinLogo {
+  from { transform: rotate(0deg);width: 1500px; height: 1500px;}
+  to { transform: rotate(360deg);}
 }
