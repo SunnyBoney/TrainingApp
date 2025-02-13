@@ -1,34 +1,3 @@
-// Chargement des tests précédents depuis localStorage et affichage dans l'ordre décroissant
-function loadPreviousTests() {
-  const container = document.getElementById("previousTests");
-  let tests = JSON.parse(localStorage.getItem("previousTests") || "[]");
-  const containerDiv = document.getElementById("previousTestsContainer");
-  if (tests.length === 0) {
-    containerDiv.style.display = "none";
-  } else {
-    containerDiv.style.display = "block";
-    container.innerHTML = "";
-    // Parcours en ordre décroissant (les plus récents en premier)
-    for (let i = tests.length - 1; i >= 0; i--) {
-      const test = tests[i];
-      const div = document.createElement("div");
-      div.className = "test-record";
-      // Stockage des données du test dans data-test en JSON
-      div.dataset.test = JSON.stringify(test);
-      div.innerHTML = `<strong>${test.name}</strong> - ${test.result} <em>(${test.date})</em><br>
-        Tractions: ${test.tractions} | Pompes: ${test.pompes} | Gainage: ${test.gainage}`;
-      // Rendre le div cliquable pour afficher le test enregistré
-      div.onclick = function() {
-        viewTest(this);
-      };
-      container.appendChild(div);
-    }
-  }
-}
-
-// Appel au chargement lors de l'ouverture de la page
-loadPreviousTests();
-
 // Navigation entre les pages
 let currentPage = 1;
 const totalPages = 4;
@@ -65,76 +34,293 @@ function prevPage() {
 
 // Détermine le sous-niveau en fonction du score total (par tranche de 10)
 function getSubLevel(totalScore) {
-  if(totalScore < 10) return "Niveau 1";
-  if(totalScore < 20) return "Niveau 2";
-  if(totalScore < 30) return "Niveau 3";
-  if(totalScore < 40) return "Niveau 1";
-  if(totalScore < 50) return "Niveau 2";
-  if(totalScore < 60) return "Niveau 3";
-  if(totalScore < 70) return "Niveau 1";
-  if(totalScore < 80) return "Niveau 2";
-  if(totalScore < 90) return "Niveau 3";
-  return "Max";
+  if(totalScore < 10) return "Niveau 0";
+  if(totalScore < 20) return "Niveau 1";
+  if(totalScore < 30) return "Niveau 2";
+  if(totalScore < 40) return "Niveau 3";
+  if(totalScore < 50) return "Niveau 1";
+  if(totalScore < 60) return "Niveau 2";
+  if(totalScore < 70) return "Niveau 3";
+  if(totalScore < 80) return "Niveau 1";
+  if(totalScore < 90) return "Niveau 2";
+  return "Divinté";
 }
   
+// Limites des rangs pour chaque exercice
 
+let reps_r1_tractions = 2;
+let reps_r2_tractions = 4;
+let reps_r3_tractions = 10;
+let reps_r4_tractions = 17;
+
+let reps_r1_pompes = 13;
+let reps_r2_pompes = 17;
+let reps_r3_pompes = 18;
+let reps_r4_pompes = 30;
+
+let reps_r1_gainage = 60;
+let reps_r2_gainage = 90;
+let reps_r3_gainage = 120;
+let reps_r4_gainage = 180;
+
+// Points pour chaque rang de chaque exercice
+
+let nb_points_r1_tractions = 5.3;
+let nb_points_r2_tractions = 2.5;
+let nb_points_r3_tractions = 1;
+let nb_points_r4_tractions = 0.2;
+
+let nb_points_r1_pompes = 0.8;
+let nb_points_r2_pompes = 0.57;
+let nb_points_r3_pompes = 0.55;
+let nb_points_r4_pompes = 0.1;
+
+let nb_points_r1_gainage = 0.1667;
+let nb_points_r2_gainage = 0.1167;
+let nb_points_r3_gainage =0.0667;
+let nb_points_r4_gainage = 0.0250;
+
+//setup toutes les fonctions à 0 par défault
+let nb_reps_r1_tractions = 0;
+let nb_reps_r2_tractions = 0;
+let nb_reps_r3_tractions = 0;
+let nb_reps_r4_tractions = 0;
+
+let nb_reps_r1_pompes = 0;
+let nb_reps_r2_pompes = 0;
+let nb_reps_r3_pompes = 0;
+let nb_reps_r4_pompes = 0;
+
+let nb_reps_r1_gainage = 0;
+let nb_reps_r2_gainage = 0;
+let nb_reps_r3_gainage = 0;
+let nb_reps_r4_gainage = 0;
+
+
+//Lorsque le test est soumi
 
 function submitTest() {
+
   // Récupération des valeurs saisies
   const tractions = parseFloat(document.getElementById('tractions').value) || 0;
   const pompes    = parseFloat(document.getElementById('pompes').value) || 0;
   const gainage   = parseFloat(document.getElementById('gainage').value) || 0;
 
-  // Calcul des points pour chaque exercice (max 33 points)
-  const pointsTractions = Math.min(33 * (tractions / 25), 33);
-  const pointsPompes    = Math.min(33 * (pompes / 50), 33);
-  const pointsGainage   = Math.min(33 * (gainage / 5), 33);
+//CALCUL DU SCORE
 
-  // Score total
-  const totalScore = pointsTractions + pointsPompes + pointsGainage;
+// Calcul des points pour chaque rang de chaque exercice
 
-  // Pourcentages par discipline
-  let perTractions = 0, perPompes = 0, perGainage = 0;
-  if (totalScore > 0) {
-    perTractions = pointsTractions / totalScore;
-    perPompes    = pointsPompes    / totalScore;
-    perGainage   = pointsGainage   / totalScore;
-  }
+  // Repartition des reps dans chaque rangs
 
-  // Détermination du type principal (type brut)
-  let typeBrut = "";
-  if (totalScore === 0) {
-    typeBrut = "Mixte"; // Par défaut
-  } else {
-    if (perPompes > 0.55) {
-      typeBrut = "Feu";
-    } else if (perTractions > 0.55) {
-      typeBrut = "Eau";
-    } else if (perGainage > 0.55) {
-      typeBrut = "Terre";
-    } else if (perGainage < 0.20) {
-      typeBrut = "Electricité";
-    } else if (perPompes < 0.20) {
-      typeBrut = "Plante";
-    } else if (perTractions < 0.20) {
-      typeBrut = "Pierre";
-    } else {
-      typeBrut = "Mixte";
+let temp_tractions = tractions;
+let temp_pompes = pompes;
+let temp_gainage = gainage;
+
+
+//tractions de rang 4
+if(temp_tractions>(reps_r1_tractions + reps_r2_tractions + reps_r3_tractions)){
+  nb_reps_r4_tractions = temp_tractions - (reps_r1_tractions + reps_r2_tractions + reps_r3_tractions);
+  temp_tractions = temp_tractions - nb_reps_r4_tractions
+};
+
+//tractions de rang 3
+if(temp_tractions>(reps_r1_tractions + reps_r2_tractions)){
+  nb_reps_r3_tractions = temp_tractions - (reps_r1_tractions + reps_r2_tractions);
+  temp_tractions = temp_tractions - nb_reps_r3_tractions
+};
+
+//tractions de rang 2
+if(temp_tractions>reps_r1_tractions){
+  nb_reps_r2_tractions = temp_tractions - reps_r1_tractions;
+  temp_tractions = temp_tractions - nb_reps_r2_tractions
+};
+
+//tractions de rang 1
+if(temp_tractions>0){
+  nb_reps_r1_tractions = temp_tractions;
+};
+
+//pompes de rang 4
+if(temp_pompes>(reps_r1_pompes + reps_r2_pompes + reps_r3_pompes)){
+  nb_reps_r4_pompes = temp_pompes - (reps_r1_pompes + reps_r2_pompes + reps_r3_pompes);
+  temp_pompes = temp_pompes - nb_reps_r4_pompes
+};
+
+//pompes de rang 3
+if(temp_pompes>(reps_r1_pompes + reps_r2_pompes)){
+  nb_reps_r3_pompes = temp_pompes - (reps_r1_pompes + reps_r2_pompes);
+  temp_pompes = temp_pompes - nb_reps_r3_pompes
+};
+
+//pompes de rang 2
+if(temp_pompes>reps_r1_pompes){
+  nb_reps_r2_pompes = temp_pompes - reps_r1_pompes;
+  temp_pompes = temp_pompes - nb_reps_r2_pompes
+};
+
+//pompes de rang 1
+if(temp_pompes>0){
+  nb_reps_r1_pompes = temp_pompes;
+};
+
+
+//gainage de rang 4
+if(temp_gainage>(reps_r1_gainage + reps_r2_gainage + reps_r3_gainage)){
+  nb_reps_r4_gainage = temp_gainage - (reps_r1_gainage + reps_r2_gainage + reps_r3_gainage);
+  temp_gainage = temp_gainage - nb_reps_r4_gainage
+};
+
+//gainage de rang 3
+if(temp_gainage>(reps_r1_gainage + reps_r2_gainage)){
+  nb_reps_r3_gainage = temp_gainage - (reps_r1_gainage + reps_r2_gainage);
+  temp_gainage = temp_gainage - nb_reps_r3_gainage
+};
+
+//gainage de rang 2
+if(temp_gainage>reps_r1_gainage){
+  nb_reps_r2_gainage = temp_gainage - reps_r1_gainage;
+  temp_gainage = temp_gainage - nb_reps_r2_gainage
+};
+
+//gainage de rang 1
+if(temp_gainage>0){
+  nb_reps_r1_gainage = temp_gainage;
+}
+
+  //Nombres de points pour chaque rangs 
+  let score_r1_tractions = nb_reps_r1_tractions*nb_points_r1_tractions;
+  let score_r2_tractions = nb_reps_r2_tractions*nb_points_r2_tractions;
+  let score_r3_tractions = nb_reps_r3_tractions*nb_points_r3_tractions;
+  let score_r4_tractions = nb_reps_r4_tractions*nb_points_r4_tractions;
+
+  let score_r1_pompes = nb_reps_r1_pompes*nb_points_r1_pompes;
+  let score_r2_pompes = nb_reps_r2_pompes*nb_points_r2_pompes;
+  let score_r3_pompes = nb_reps_r3_pompes*nb_points_r3_pompes;
+  let score_r4_pompes = nb_reps_r4_pompes*nb_points_r4_pompes;
+
+  let score_r1_gainage = nb_reps_r1_gainage*nb_points_r1_gainage;
+  let score_r2_gainage = nb_reps_r2_gainage*nb_points_r2_gainage;
+  let score_r3_gainage = nb_reps_r3_gainage*nb_points_r3_gainage;
+  let score_r4_gainage = nb_reps_r4_gainage*nb_points_r4_gainage;
+
+
+  let score_total_tractions = score_r1_tractions+score_r2_tractions+score_r3_tractions+score_r4_tractions;
+  let score_total_pompes = score_r1_pompes+score_r2_pompes+score_r3_pompes+score_r4_pompes;
+  let score_total_gainage = score_r1_gainage+score_r2_gainage+score_r3_gainage+score_r4_gainage;
+
+  
+  //pour ceux qui ne font pas de tractions
+  
+  if(pompes<14){
+    if(score_total_tractions<(score_total_pompes+score_total_gainage)/2){
+      score_total_tractions = (score_total_pompes+score_total_gainage)/2
     }
   }
 
+  // Score total
+  const totalScore = score_total_tractions + score_total_pompes + score_total_gainage;
+  
+    //Détérmination du type
+
+      //détérmination de la faiblesse
+          
+      function def_faiblesse(a, b, c) {
+        if (a < b && a < c) {
+          return "Tractions";
+        } else if (b < c) {
+          return "Pompes";
+        } else {
+          return "Gainage";
+        }
+      }  
+
+      let faiblesse = def_faiblesse(score_total_tractions, score_total_pompes, score_total_gainage);
+
+
+
+      //détérmination de cosmos
+    let prc_score_tractions = score_total_tractions/totalScore;
+    let prc_score_pompes = score_total_pompes/totalScore;
+    let prc_score_gainage = score_total_gainage/totalScore;
+
+    function cosmos(a, b, c) {
+      if (a < 0.32 || b < 0.32 || c < 0.32) {
+        return "Type";
+      } else {
+        return "Cosmos";
+      }
+    }
+    
+      
+
+  // Ici, on détermine le type en fonction de la faiblesse et de l'écart entre les scores
+
+  let type = "XXX"
+
+  if (faiblesse == "Tractions") {
+    if (score_total_pompes > score_total_gainage) {
+      if (score_total_pompes - score_total_gainage > score_total_gainage - score_total_tractions) {
+        type = "Feu";
+      } else {
+        type = "Pierre";
+      }
+    } else if (score_total_gainage - score_total_pompes > score_total_pompes - score_total_tractions) {
+      type = "Terre";
+    } else {
+      type = "Pierre";
+    }
+  } else if (faiblesse == "Pompes") {
+    if (score_total_tractions > score_total_gainage) {
+      if (score_total_tractions - score_total_gainage > score_total_gainage - score_total_pompes) {
+        type = "Eau";
+      } else {
+        type = "Plante";
+      }
+    } else if (score_total_gainage - score_total_tractions > score_total_tractions - score_total_pompes) {
+      type = "Terre";
+    } else {
+      type = "Plante";
+    }
+  } 
+
+  else if (faiblesse == "Gainage") {
+    if (score_total_tractions > score_total_pompes) {
+      if (score_total_tractions - score_total_pompes > score_total_pompes - score_total_gainage) {
+        type = "Eau";
+      } else {
+        type = "Electrique";
+      }
+    } else if (score_total_pompes - score_total_tractions > score_total_tractions - score_total_gainage) {
+      type = "Feu";
+    } else {
+      type = "Electrique";
+    }
+  }
+
+  if (cosmos(prc_score_tractions, prc_score_pompes, prc_score_gainage) === "Type") {
+    finaltype = type}
+    else {finaltype = "Cosmos"}
+
+
   // Détermination du niveau global
   let globalLevel;
-  if (totalScore < 30) {
+  if (totalScore < 40) {
     globalLevel = 0;
-  } else if (totalScore > 60) {
-    globalLevel = 2;
-  } else {
+  } else if (totalScore < 70) {
+    globalLevel = 1;
+  }
+    else if (totalScore > 90) {
+      globalLevel = 2;
+    }
+  else {
     globalLevel = 1;
   }
 
+
+
   // Sous-niveau (par tranche de 10)
   const subLevel = getSubLevel(totalScore);
+
 
   // Tableaux de noms finaux pour chaque type en fonction du niveau global
   const finalNames = {
@@ -144,161 +330,37 @@ function submitTest() {
     "Electricité":   ["Pile", "Electricité", "Foudre"],
     "Pierre":        ["Gravier", "Pierre", "Diamant"],
     "Plante":        ["Feuille", "Plante", "Foret"],
-    "Mixte":         ["Singularité", "Cosmos", "Infinie"]
+    "Cosmos":        ["Singularité", "Cosmos", "Infinie", "Universelle"]
   };
 
-  let finalTypeName = finalNames[typeBrut] ? finalNames[typeBrut][globalLevel] : typeBrut;
+  let finalTypeName = finalNames[finaltype] ? finalNames[finaltype][globalLevel] : finaltype;
 
-  // Gestion de l'ascendant (seulement si le type principal est Mixte)
-  let ascendant = "";
-  if (typeBrut === "Mixte" && !(finalTypeName === "Infinie" && subLevel === "Max")) {
-    const minPercentage = Math.min(perTractions, perPompes, perGainage);
-    if (minPercentage === perTractions) {
-      ascendant = "Pierre";
-    } else if (minPercentage === perPompes) {
-      ascendant = "Plante";
-    } else if (minPercentage === perGainage) {
-      ascendant = "Electricité";
-    }
-  }
 
   // Construction du résultat final
   let affichageFinal = finalTypeName + " " + subLevel;
-  if (ascendant !== "") {
-    affichageFinal += " Ascendant " + ascendant;
-  }
+  let afftotalscroe = Math.floor(totalScore) + " / 100"
 
-  // Texte d'explication en fonction du nom final (sans le sous-niveau)
-  const explanationMapping = {
-    "Flaque": "Votre potentiel reste modeste, continuez à vous entraîner.",
-    "Eau": "Votre équilibre discret laisse entrevoir une force naissante.",
-    "Glace": "Votre calme et votre puissance se manifestent avec élégance.",
-    "Etincelle": "Votre énergie prometteuse illumine vos débuts.",
-    "Feu": "Votre passion et votre intensité font de vous un véritable moteur.",
-    "Lave": "Votre puissance ardente est difficile à contenir.",
-    "Boue": "Votre force humble se transforme en détermination.",
-    "Terre": "Votre stabilité et votre constance sont vos meilleurs atouts.",
-    "Seisme": "Votre impact est énorme, vous êtes une force de la nature.",
-    "Pile": "Votre énergie constante vous permet de relever tous les défis.",
-    "Electricité": "Votre dynamisme électrise tout autour de vous.",
-    "Gravier": "Votre solidité et votre persévérance font votre force.",
-    "Pierre": "Votre résilience inébranlable vous définit.",
-    "Feuille": "Votre adaptabilité et votre fraîcheur vous démarquent.",
-    "Plante": "Votre vitalité et votre capacité à évoluer sont remarquables.",
-    "Singularité": "Votre profil unique vous distingue nettement.",
-    "Cosmos": "Votre équilibre mystérieux ouvre un vaste univers de possibilités.",
-    "Infinie": "Votre potentiel est infini, vous avez atteint le sommet."
-  };
-  const explanationText = explanationMapping[finalTypeName] || "Votre profil est unique.";
-  // On ajoute les valeurs d'exercices dans l'explication
-  const fullExplanation = explanationText + ` (Tractions: ${document.getElementById('tractions').value}, Pompes: ${document.getElementById('pompes').value}, Gainage: ${document.getElementById('gainage').value})`;
-  document.getElementById("explanation").textContent = fullExplanation;
-
-  // Affichage du résultat final (sans afficher le score)
+  // Affichage du résultat final
   document.getElementById('typeDisplay').textContent = affichageFinal;
+  document.getElementById('scoredisplay').textContent = afftotalscroe;
 
-  // Passage à la page de résultat
+  // Passage à la page de résultat avec animation
+
   currentPage = totalPages;
-  showPage(currentPage);
+    showPage(currentPage);
+
+    
+  showLoadingAnimation()
+
+ // animation pour les résultats
+ function showLoadingAnimation(callback) {
+  const overlay = document.getElementById("loadingOverlay");
+  overlay.style.display = "flex";
+  
+  setTimeout(() => {
+    overlay.style.display = "none";
+    callback();
+  }, 10000);
 }
 
-// Fonction appelée lors du clic sur un test enregistré
-function viewTest(element) {
-  const record = JSON.parse(element.dataset.test);
-  document.getElementById('typeDisplay').textContent = record.result;
-  const fullExplanation = record.explanation + ` (Tractions: ${record.tractions}, Pompes: ${record.pompes}, Gainage: ${record.gainage})`;
-  document.getElementById("explanation").textContent = fullExplanation;
-  currentPage = totalPages;
-  showPage(currentPage);
 }
-
-// Gestion de la modal d'enregistrement
-function openSaveModal() {
-  document.getElementById("saveModal").style.display = "flex";
-  document.getElementById("saveInputContainer").style.display = "none";
-}
-
-function dontSave() {
-  closeSaveModal();
-  restartTestNow();
-}
-
-function showSaveInput() {
-  document.getElementById("saveInputContainer").style.display = "block";
-}
-
-function saveTest() {
-  const testName = document.getElementById("testName").value.trim();
-  if(testName === "") {
-    alert("Veuillez saisir un nom pour le test.");
-    return;
-  }
-  // Création de l'objet test avec les informations enregistrées
-  const record = {
-    name: testName,
-    result: document.getElementById("typeDisplay").textContent,
-    explanation: document.getElementById("explanation").textContent,
-    date: new Date().toLocaleString(),
-    tractions: document.getElementById("tractions").value,
-    pompes: document.getElementById("pompes").value,
-    gainage: document.getElementById("gainage").value
-  };
-  let tests = JSON.parse(localStorage.getItem("previousTests") || "[]");
-  tests.push(record);
-  localStorage.setItem("previousTests", JSON.stringify(tests));
-  closeSaveModal();
-  restartTestNow();
-  loadPreviousTests();
-}
-
-
-function closeSaveModal() {
-  document.getElementById("saveModal").style.display = "none";
-  document.getElementById("testName").value = "";
-}
-
-function restartTestNow() {
-  document.getElementById('tractions').value = "";
-  document.getElementById('pompes').value = "";
-  document.getElementById('gainage').value = "";
-  currentPage = 1;
-  showPage(currentPage);
-}
-
-// Variables pour le chronomètre
-let timerInterval;
-let elapsedTime = 0; // temps écoulé en millisecondes
-
-// Fonction pour mettre à jour l'affichage du chronomètre
-function updateDisplay() {
-  let totalSeconds = Math.floor(elapsedTime / 1000);
-  let hours = Math.floor(totalSeconds / 3600);
-  let minutes = Math.floor((totalSeconds % 3600) / 60);
-  let seconds = totalSeconds % 60;
-
-  // Formater avec deux chiffres
-  const format = (unit) => unit < 10 ? "0" + unit : unit;
-  document.getElementById("timerDisplay").textContent = `${format(hours)}:${format(minutes)}:${format(seconds)}`;
-}
-
-// Gestion du bouton Démarrer/Arrêter
-document.getElementById("startStopButton").addEventListener("click", function() {
-  if (this.textContent === "Démarrer") {
-    timerInterval = setInterval(function() {
-      elapsedTime += 1000; // ajouter 1 seconde
-      updateDisplay();
-    }, 1000);
-    this.textContent = "Arrêter";
-  } else {
-    clearInterval(timerInterval);
-    this.textContent = "Démarrer";
-  }
-});
-
-// Gestion du bouton Réinitialiser
-document.getElementById("resetButton").addEventListener("click", function() {
-  clearInterval(timerInterval);
-  elapsedTime = 0;
-  updateDisplay();
-  document.getElementById("startStopButton").textContent = "Démarrer";
-});
