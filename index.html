@@ -40,64 +40,37 @@
 <div id="page3" class="page">
     <h2>Exercice 3 : Gainage</h2>
     <div class="form-group">
-      <label for="gainage">Durée de gainage (en minutes)</label>
+      <label for="gainage">Durée de gainage (en seconde)</label>
       <!-- Ce champ peut être rempli manuellement ou automatiquement -->
-      <input type="number" id="gainage" name="gainage" min="0" step="0.1" placeholder="Saisissez le temps ou utilisez le chronomètre" required>
-    </div>
-    <!-- Section du chronomètre -->
-    <div class="stopwatch">
-      <p id="timerDisplay">00:00:00</p>
-      <div class="stopwatch-buttons">
-        <button id="startStopButton">Démarrer</button>
-        <button id="resetButton">Réinitialiser</button>
+      <input type="number" id="gainage" name="gainage" min="0" step="0.1" placeholder="Saisissez le temps" required>
+      <div class="nav-buttons">
+        <div></div>
+        <button onclick="submitTest()">Terminer</button>
       </div>
     </div>
-    <div class="nav-buttons">
-      <button onclick="prevPage()">Précédent</button>
-      <button onclick="submitTest()">Valider</button>
-    </div>
-  </div>
+
+</div>
   
   
     
    
     <!-- Page 4 : Résultat -->
+
+     <!-- Overlay d'animation de chargement -->
+<div class="loadingOverlay" id="loadingOverlay" style="display: none;">
+    <!-- Contenu de l'overlay -->
+    <div class="logo"></div>
+</div>
     <div id="resultPage" class="page">
       <h2>Résultat</h2>
       <div class="result">
         <p id="typeDisplay"></p>
-        <p id="explanation"></p>
-      </div>
-      <div class="nav-buttons" style="justify-content: center; margin-top: 20px;">
-        <button onclick="openSaveModal()">Recommencer</button>
+        <p id="scoredisplay"></p>
+
       </div>
     </div>
   </div>
-  
-  <!-- Section Tests précédents -->
-  <div id="previousTestsContainer" class="previous-tests-container">
-    <h2>Tests précédents</h2>
-    <div id="previousTests"></div>
-  </div>
-  
-  <!-- Modal pour enregistrer les résultats -->
-  <div id="saveModal" class="modal">
-    <div class="modal-content">
-      <p>Voulez-vous enregistrer les résultats du test ?</p>
-      <div class="modal-buttons">
-        <button onclick="dontSave()">Non</button>
-        <button onclick="showSaveInput()">Oui</button>
-      </div>
-      <div id="saveInputContainer" style="display:none;">
-        <label for="testName">Nom du test :</label>
-        <input type="text" id="testName" placeholder="Entrez le nom du test">
-        <div class="modal-buttons" style="margin-top:10px;">
-          <button onclick="saveTest()">Valider</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
+    
   <!-- Lien vers le fichier JavaScript -->
   <script src="script.js"></script>
 </body>
